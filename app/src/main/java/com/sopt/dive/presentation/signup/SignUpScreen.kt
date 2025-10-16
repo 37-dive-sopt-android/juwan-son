@@ -81,7 +81,7 @@ fun SignUpScreen(
             value = id,
             onValueChange = { id = it },
             placeholder = stringResource(id = R.string.signup_id_hint),
-            imeAction = ImeAction.Done,
+            imeAction = ImeAction.Next,
             keyboardType = KeyboardType.Text,
             onImeAction = { passwordFocusRequester.requestFocus() }
         )
@@ -91,7 +91,7 @@ fun SignUpScreen(
             value = pw,
             onValueChange = { pw = it },
             placeholder = stringResource(id = R.string.signup_pw_hint),
-            imeAction = ImeAction.Done,
+            imeAction = ImeAction.Next,
             keyboardType = KeyboardType.Password,
             onImeAction = { nicknameFocusRequester.requestFocus() },
             focusRequester = passwordFocusRequester,
@@ -103,7 +103,7 @@ fun SignUpScreen(
             value = nickname,
             onValueChange = { nickname = it },
             placeholder = stringResource(id = R.string.signup_nickname_hint),
-            imeAction = ImeAction.Done,
+            imeAction = ImeAction.Next,
             keyboardType = KeyboardType.Text,
             onImeAction = { mbtiFocusRequester.requestFocus() },
             focusRequester = nicknameFocusRequester
