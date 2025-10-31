@@ -34,7 +34,7 @@ fun SoptButton(
 ) {
     val (backgroundColor, textColor) = remember(isEnalbed) {
         when (isEnalbed) {
-            true -> Color.Blue to Color.White
+            true -> Color.Red to Color.White
             false -> Color.Gray to Color.Black
         }
     }
