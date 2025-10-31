@@ -3,6 +3,7 @@ package com.sopt.dive.presentation.signup
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -30,16 +31,34 @@ import androidx.compose.ui.unit.sp
 import com.sopt.dive.R
 import com.sopt.dive.core.component.button.SoptButton
 import com.sopt.dive.core.component.textField.TextFieldForm
+import com.sopt.dive.data.local.UserPreferences
 
 @Preview(showBackground = true)
 @Composable
 private fun PreviewSignUpScreen() {
-    SignUpScreen(onSignUpSuccess = { _, _, _ -> })
+    SignUpScreen(onSignUpSuccess = { _, _, _ -> }, paddingValues = PaddingValues())
+}
+@Composable
+fun SignUpRoute(
+    paddingValues: PaddingValues,
+    navigateToSignIn: (String, String) -> Unit,
+) {
+    val context = LocalContext.current
+    val userPreferences = remember { UserPreferences(context) }
+
+    SignUpScreen(
+        paddingValues = paddingValues,
+        onSignUpSuccess = { id, pw, nickname ->
+            userPreferences.saveLoginInfo(id, pw, nickname)
+            navigateToSignIn(id, pw)
+        }
+    )
 }
 
 @Composable
 fun SignUpScreen(
     onSignUpSuccess: (String, String, String) -> Unit,
+    paddingValues: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
     var id by remember { mutableStateOf("") }
@@ -61,7 +80,7 @@ fun SignUpScreen(
 
     Column(
         modifier = modifier
-            .padding(24.dp)
+            .padding(paddingValues)
             .fillMaxSize()
             .imePadding(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
