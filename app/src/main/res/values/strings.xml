@@ -1,5 +1,14 @@
 <resources>
     <string name="app_name">dive</string>
+
+    <string name="bottom_navigation_item_home">home</string>
+    <string name="bottom_navigation_item_search">search</string>
+    <string name="bottom_navigation_item_community">community</string>
+    <string name="bottom_navigation_item_mypage">mypage</string>
+
+    <!--Core-->
+    <string name="topbar_logo">youtube logo</string>
+    <string name="topbar_title">YouTube</string>
     <!-- SignIn -->
     <string name="signin_title">Welcome to SOPT</string>
     <string name="signin_id">ID</string>
@@ -19,6 +28,8 @@
     <string name="signup_mbti">MBTI</string>
     <string name="signup_mbti_hint">MBTI가 궁금해요</string>
     <string name="signup_button">회원가입 하기</string>
+    <!-- Home -->
+    <string name="home_more_icon">More</string>
     <!-- Mypage -->
     <string name="mypage_title">마이페이지</string>
     <string name="mypage_profile">My Profile</string>

@@ -36,6 +36,25 @@ class UserPreferences(context: Context) {
         }
     }
 
+    fun getUserInfo(): Triple<String, String, String>? {
+        val id = prefs.getString("user_id", null)
+        val pw = prefs.getString("user_pw", null)
+        val nickname = prefs.getString("user_nickname", null)
+
+        return if (id != null && pw != null && nickname != null) {
+            Triple(id, pw, nickname)
+        } else {
+            null
+        }
+    }
+
+    fun logout() {
+        prefs.edit().apply {
+            putBoolean("auto_login", false)
+            apply()
+        }
+    }
+
     fun clearLoginInfo() {
         prefs.edit().apply {
             remove("auto_login")
