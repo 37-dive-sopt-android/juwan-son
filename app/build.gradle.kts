@@ -61,4 +61,6 @@ dependencies {
     implementation(libs.kotlinx.immutable)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.coil.compose)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.5")
+
 }
