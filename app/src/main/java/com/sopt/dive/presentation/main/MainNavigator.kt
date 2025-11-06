@@ -10,6 +10,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.sopt.dive.presentation.community.navigation.navigateToCommunity
+import com.sopt.dive.presentation.home.navigation.Home
 import com.sopt.dive.presentation.home.navigation.navigateToHome
 import com.sopt.dive.presentation.mypage.navigation.navigateToMypage
 import com.sopt.dive.presentation.search.navigation.navigateToSearch
@@ -21,7 +22,7 @@ class MainNavigator(
     val navController: NavHostController,
 ) {
 
-    val startDestination = Signin()
+    val startDestination = Home
 
     private val currentDestination: NavDestination?
         @Composable get() = navController

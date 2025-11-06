@@ -31,13 +31,15 @@ import androidx.compose.ui.unit.sp
 import com.sopt.dive.R
 import com.sopt.dive.core.component.button.SoptButton
 import com.sopt.dive.core.component.textField.TextFieldForm
+import com.sopt.dive.data.local.UserData
 import com.sopt.dive.data.local.UserPreferences
 
 @Preview(showBackground = true)
 @Composable
 private fun PreviewSignUpScreen() {
-    SignUpScreen(onSignUpSuccess = { _, _, _ -> }, paddingValues = PaddingValues())
+    SignUpScreen(onSignUpSuccess = { _ -> }, paddingValues = PaddingValues())
 }
+
 @Composable
 fun SignUpRoute(
     paddingValues: PaddingValues,
@@ -48,16 +50,16 @@ fun SignUpRoute(
 
     SignUpScreen(
         paddingValues = paddingValues,
-        onSignUpSuccess = { id, pw, nickname ->
-            userPreferences.saveLoginInfo(id, pw, nickname)
-            navigateToSignIn(id, pw)
+        onSignUpSuccess = { userData ->
+            userPreferences.saveLoginInfo(userData)
+            navigateToSignIn(userData.id, userData.password)
         }
     )
 }
 
 @Composable
 fun SignUpScreen(
-    onSignUpSuccess: (String, String, String) -> Unit,
+    onSignUpSuccess: (UserData) -> Unit,
     paddingValues: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
@@ -77,6 +79,14 @@ fun SignUpScreen(
             pw.length in 8..12 &&
             nickname.isNotBlank() &&
             mbti.isNotBlank()
+
+    fun onSignUp() {
+        if (isFormValid) {
+            onSignUpSuccess(UserData(id, pw, nickname))
+        } else {
+            Toast.makeText(context, "모든 정보를 올바르게 입력해주세요!", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Column(
         modifier = modifier
@@ -137,9 +147,7 @@ fun SignUpScreen(
             keyboardType = KeyboardType.Text,
             onImeAction = {
                 focusManager.clearFocus()
-                if (isFormValid) {
-                    onSignUpSuccess(id, pw, nickname)
-                }
+                onSignUp()
             },
             focusRequester = mbtiFocusRequester
         )
@@ -149,13 +157,7 @@ fun SignUpScreen(
         SoptButton(
             label = stringResource(id = R.string.signup_button),
             isEnalbed = isFormValid,
-            onClick = {
-                if (isFormValid) {
-                    onSignUpSuccess(id, pw, nickname)
-                } else {
-                    Toast.makeText(context, "모든 정보를 올바르게 입력해주세요!", Toast.LENGTH_SHORT).show()
-                }
-            }
+            onClick = { onSignUp() }
         )
     }
 }

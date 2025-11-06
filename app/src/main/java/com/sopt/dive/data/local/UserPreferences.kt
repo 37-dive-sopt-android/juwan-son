@@ -10,17 +10,17 @@ class UserPreferences(context: Context) {
         Context.MODE_PRIVATE
     )
 
-    fun saveLoginInfo(id: String, pw: String, nickname: String) {
+    fun saveLoginInfo(userData: UserData) {
         prefs.edit().apply {
             putBoolean("auto_login", true)
-            putString("user_id", id)
-            putString("user_pw", pw)
-            putString("user_nickname", nickname)
+            putString("user_id", userData.id)
+            putString("user_pw", userData.password)
+            putString("user_nickname", userData.nickname)
             apply()
         }
     }
 
-    fun getLoginInfo(): Triple<String, String, String>? {
+    fun getLoginInfo(): UserData? {
         if (!prefs.getBoolean("auto_login", false)) {
             return null
         }
@@ -30,28 +30,9 @@ class UserPreferences(context: Context) {
         val nickname = prefs.getString("user_nickname", null)
 
         return if (id != null && pw != null && nickname != null) {
-            Triple(id, pw, nickname)
+            UserData(id, pw, nickname)
         } else {
             null
-        }
-    }
-
-    fun getUserInfo(): Triple<String, String, String>? {
-        val id = prefs.getString("user_id", null)
-        val pw = prefs.getString("user_pw", null)
-        val nickname = prefs.getString("user_nickname", null)
-
-        return if (id != null && pw != null && nickname != null) {
-            Triple(id, pw, nickname)
-        } else {
-            null
-        }
-    }
-
-    fun logout() {
-        prefs.edit().apply {
-            putBoolean("auto_login", false)
-            apply()
         }
     }
 

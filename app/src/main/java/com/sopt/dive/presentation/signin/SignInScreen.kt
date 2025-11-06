@@ -61,8 +61,8 @@ fun SignInRoute(
     val userPreferences = remember { UserPreferences(context) }
 
     LaunchedEffect(Unit) {
-        userPreferences.getLoginInfo()?.let { (id, pw, nickname) ->
-            Toast.makeText(context, "${nickname}님 환영합니다!", Toast.LENGTH_SHORT).show()
+        userPreferences.getLoginInfo()?.let { userData ->
+            Toast.makeText(context, "${userData.nickname}님 환영합니다!", Toast.LENGTH_SHORT).show()
             navigateToHome()
         }
     }
@@ -103,10 +103,8 @@ fun SignInScreen(
             return
         }
 
-        val (savedId, savedPw, nickname) = savedInfo
-
-        if (id == savedId && pw == savedPw) {
-            Toast.makeText(context, "${nickname}님 환영합니다!", Toast.LENGTH_SHORT).show()
+        if (id == savedInfo.id && pw == savedInfo.password) {
+            Toast.makeText(context, "${savedInfo.nickname}님 환영합니다!", Toast.LENGTH_SHORT).show()
             navigateToHome()
         } else {
             Toast.makeText(context, "아이디 또는 비밀번호가 일치하지 않습니다", Toast.LENGTH_SHORT).show()
