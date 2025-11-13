@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,13 +32,19 @@ import androidx.compose.ui.unit.sp
 import com.sopt.dive.R
 import com.sopt.dive.core.component.button.SoptButton
 import com.sopt.dive.core.component.textField.TextFieldForm
+import com.sopt.dive.data.local.UserData
 import com.sopt.dive.data.local.UserPreferences
 
 @Preview(showBackground = true)
 @Composable
 private fun PreviewSignUpScreen() {
-    SignUpScreen(onSignUpSuccess = { _, _, _ -> }, paddingValues = PaddingValues())
+    SignUpScreen(
+        onSignUpSuccess = { _ -> },
+        onSignUpFail = {},
+        paddingValues = PaddingValues()
+    )
 }
+
 @Composable
 fun SignUpRoute(
     paddingValues: PaddingValues,
@@ -48,16 +55,20 @@ fun SignUpRoute(
 
     SignUpScreen(
         paddingValues = paddingValues,
-        onSignUpSuccess = { id, pw, nickname ->
-            userPreferences.saveLoginInfo(id, pw, nickname)
-            navigateToSignIn(id, pw)
+        onSignUpSuccess = { userData ->
+            userPreferences.saveLoginInfo(userData)
+            navigateToSignIn(userData.id, userData.password)
+        },
+        onSignUpFail = {
+            Toast.makeText(context, "회원가입에 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
         }
     )
 }
 
 @Composable
 fun SignUpScreen(
-    onSignUpSuccess: (String, String, String) -> Unit,
+    onSignUpSuccess: (UserData) -> Unit,
+    onSignUpFail: () -> Unit,
     paddingValues: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
@@ -73,10 +84,25 @@ fun SignUpScreen(
     val nicknameFocusRequester = remember { FocusRequester() }
     val mbtiFocusRequester = remember { FocusRequester() }
 
-    val isFormValid = id.length in 6..10 &&
-            pw.length in 8..12 &&
-            nickname.isNotBlank() &&
-            mbti.isNotBlank()
+    val isFormValid by remember {
+        derivedStateOf {
+            id.length in 6..10 &&
+                    pw.length in 8..12 &&
+                    nickname.isNotBlank() &&
+                    mbti.isNotBlank()
+        }
+    }
+
+    val onSignUp = remember(id, pw, nickname, mbti, isFormValid) {
+        {
+            if (isFormValid) {
+                onSignUpSuccess(UserData(id, pw, nickname))
+            } else {
+                Toast.makeText(context, "모든 정보를 올바르게 입력해주세요!", Toast.LENGTH_SHORT).show()
+                onSignUpFail()
+            }
+        }
+    }
 
     Column(
         modifier = modifier
@@ -137,9 +163,7 @@ fun SignUpScreen(
             keyboardType = KeyboardType.Text,
             onImeAction = {
                 focusManager.clearFocus()
-                if (isFormValid) {
-                    onSignUpSuccess(id, pw, nickname)
-                }
+                onSignUp()
             },
             focusRequester = mbtiFocusRequester
         )
@@ -149,13 +173,7 @@ fun SignUpScreen(
         SoptButton(
             label = stringResource(id = R.string.signup_button),
             isEnalbed = isFormValid,
-            onClick = {
-                if (isFormValid) {
-                    onSignUpSuccess(id, pw, nickname)
-                } else {
-                    Toast.makeText(context, "모든 정보를 올바르게 입력해주세요!", Toast.LENGTH_SHORT).show()
-                }
-            }
+            onClick = onSignUp
         )
     }
 }

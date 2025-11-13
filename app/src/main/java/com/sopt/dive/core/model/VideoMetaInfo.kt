@@ -1,27 +1,41 @@
-package com.sopt.dive.presentation.home.model
+package com.sopt.dive.core.model
 
-enum class VideoDuration {
-    NONE,
-    NORMAL,
-    LIVE,
-    SHORTS
+enum class VideoDuration(val label: String?) {
+    NONE(null),
+    NORMAL(null),
+    LIVE("LIVE"),
+    SHORTS("Shorts");
+
+    companion object {
+        fun fromLabel(label: String?): VideoDuration =
+            entries.firstOrNull { it.label == label } ?: NORMAL
+    }
 }
 
-enum class VideoBadge {
-    NONE,
-    NEW,
-    FOUR_K,
-    HD,
-    CC
+enum class VideoBadge(val label: String?) {
+    NONE(null),
+    NEW("NEW"),
+    FOUR_K("4K"),
+    HD("HD"),
+    CC("CC");
+
+    companion object {
+        fun fromLabel(label: String?): VideoBadge =
+            entries.firstOrNull { it.label == label } ?: NONE
+    }
 }
 
-enum class VideoStatusChip {
-    NONE,
-    NEW,
-    TRENDING,
-    UPDATED
-}
+enum class VideoStatusChip(val label: String?) {
+    NONE(null),
+    NEW("NEW"),
+    TRENDING("TRENDING"),
+    UPDATED("UPDATED");
 
+    companion object {
+        fun fromLabel(label: String?): VideoStatusChip =
+            entries.firstOrNull { it.label == label } ?: NONE
+    }
+}
 enum class ChannelProfile {
     SHOW,
     HIDE
