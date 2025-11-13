@@ -16,13 +16,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sopt.dive.core.component.topbar.SoptTopBar
 import com.sopt.dive.presentation.home.component.YouTubeVideoItem
-import com.sopt.dive.presentation.home.model.ChannelProfile
+import com.sopt.dive.core.model.ChannelProfile
 import com.sopt.dive.presentation.home.model.HomeState
-import com.sopt.dive.presentation.home.model.VideoBadge
-import com.sopt.dive.presentation.home.model.VideoDuration
-import com.sopt.dive.presentation.home.model.VideoMetaInfo
-import com.sopt.dive.presentation.home.model.VideoStatusChip
-import com.sopt.dive.presentation.home.model.YouTubeVideoItemData
+import com.sopt.dive.core.model.VideoBadge
+import com.sopt.dive.core.model.VideoDuration
+import com.sopt.dive.core.model.VideoMetaInfo
+import com.sopt.dive.core.model.VideoStatusChip
+import com.sopt.dive.core.model.YouTubeVideoItemData
 import com.sopt.dive.presentation.home.viewmodel.HomeViewModel
 
 @Composable
@@ -44,25 +44,26 @@ fun HomeScreen(
     homeState: HomeState,
     modifier: Modifier = Modifier,
 ) {
-    val videoItems = homeState.videos
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
-            .background(color = Color.Black)
-            .padding(paddingValues)
-            .padding(horizontal = 16.dp),
-    ) {
-        item {
-            SoptTopBar()
-        }
+    with(homeState) {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .background(color = Color.Black)
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp),
+        ) {
+            item {
+                SoptTopBar()
+            }
 
-        items(
-            items = videoItems,
-            key = { item -> "video_${item.title}_${item.metaInfo}" },
-            contentType = { "video_item" }
-        ) { item ->
-            YouTubeVideoItem(data = item)
+            items(
+                items = videos,
+                key = { item -> "video_${item.title}_${item.metaInfo}" },
+                contentType = { "video_item" }
+            ) { item ->
+                YouTubeVideoItem(data = item)
+            }
         }
     }
 }

@@ -2,13 +2,13 @@ package com.sopt.dive.presentation.home.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sopt.dive.presentation.home.model.ChannelProfile
+import com.sopt.dive.core.model.ChannelProfile
 import com.sopt.dive.presentation.home.model.HomeState
-import com.sopt.dive.presentation.home.model.VideoBadge
-import com.sopt.dive.presentation.home.model.VideoDuration
-import com.sopt.dive.presentation.home.model.VideoMetaInfo
-import com.sopt.dive.presentation.home.model.VideoStatusChip
-import com.sopt.dive.presentation.home.model.YouTubeVideoItemData
+import com.sopt.dive.core.model.VideoBadge
+import com.sopt.dive.core.model.VideoDuration
+import com.sopt.dive.core.model.VideoMetaInfo
+import com.sopt.dive.core.model.VideoStatusChip
+import com.sopt.dive.core.model.YouTubeVideoItemData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.MutableStateFlow

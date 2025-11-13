@@ -26,12 +26,12 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sopt.dive.R
-import com.sopt.dive.presentation.home.model.ChannelProfile
-import com.sopt.dive.presentation.home.model.VideoBadge
-import com.sopt.dive.presentation.home.model.VideoDuration
-import com.sopt.dive.presentation.home.model.VideoMetaInfo
-import com.sopt.dive.presentation.home.model.VideoStatusChip
-import com.sopt.dive.presentation.home.model.YouTubeVideoItemData
+import com.sopt.dive.core.model.ChannelProfile
+import com.sopt.dive.core.model.VideoBadge
+import com.sopt.dive.core.model.VideoDuration
+import com.sopt.dive.core.model.VideoMetaInfo
+import com.sopt.dive.core.model.VideoStatusChip
+import com.sopt.dive.core.model.YouTubeVideoItemData
 
 @Composable
 fun YouTubeVideoItem(

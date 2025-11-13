@@ -131,8 +131,8 @@ private fun FrontCard(
 
 @Composable
 private fun BackCard(
-    modifier: Modifier = Modifier,
     textAlpha: Float,
+    modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier

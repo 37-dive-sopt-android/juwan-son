@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,8 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sopt.dive.presentation.home.model.VideoMetaInfo
-import com.sopt.dive.presentation.home.model.VideoStatusChip
+import com.sopt.dive.core.model.VideoMetaInfo
+import com.sopt.dive.core.model.VideoStatusChip
 
 @Composable
 fun VideoInfo(
@@ -38,9 +39,7 @@ fun VideoInfo(
         }
     }
 
-    Column(
-        modifier = modifier
-    ) {
+    Column {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -82,6 +81,8 @@ private fun VideoMetaInfoDisplay(
     metaInfo: VideoMetaInfo,
     modifier: Modifier = Modifier,
 ) {
+    fun Modifier.safeTextModifier(): Modifier = this.wrapContentWidth()
+
     when (metaInfo) {
         is VideoMetaInfo.Basic -> {
             Text(
@@ -90,7 +91,7 @@ private fun VideoMetaInfoDisplay(
                 fontSize = 12.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = modifier
+                modifier = modifier.safeTextModifier()
             )
         }
 
@@ -101,7 +102,8 @@ private fun VideoMetaInfoDisplay(
                     color = Color.Gray,
                     fontSize = 12.sp,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.safeTextModifier()
                 )
                 val additionalInfo = buildString {
                     append(metaInfo.uploadTime)
@@ -113,7 +115,8 @@ private fun VideoMetaInfoDisplay(
                     color = Color.Gray,
                     fontSize = 11.sp,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.safeTextModifier()
                 )
             }
         }
@@ -125,7 +128,7 @@ private fun VideoMetaInfoDisplay(
                 fontSize = 12.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = modifier
+                modifier = Modifier.safeTextModifier()
             )
         }
     }
