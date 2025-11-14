@@ -1,6 +1,7 @@
 package com.sopt.dive.presentation.mypage.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -20,7 +21,8 @@ fun NavGraphBuilder.mypageNavGraph(
     composable<Mypage> {
         MypageRoute(
             paddingValues = padding,
-            navigateToSignin = navigateToSignin
+            navigateToSignin = navigateToSignin,
+            viewModel = hiltViewModel()
         )
     }
 }

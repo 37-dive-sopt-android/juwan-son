@@ -1,33 +1,34 @@
 package com.sopt.dive.presentation.main
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.sopt.dive.presentation.community.navigation.navigateToCommunity
-import com.sopt.dive.presentation.home.navigation.Home
 import com.sopt.dive.presentation.home.navigation.navigateToHome
 import com.sopt.dive.presentation.mypage.navigation.navigateToMypage
 import com.sopt.dive.presentation.search.navigation.navigateToSearch
 import com.sopt.dive.presentation.signin.navigation.Signin
 import com.sopt.dive.presentation.signin.navigation.navigateToSignin
+import com.sopt.dive.presentation.signup.navigation.Signup
 import com.sopt.dive.presentation.signup.navigation.navigateToSignup
 
 class MainNavigator(
     val navController: NavHostController,
 ) {
-
-    val startDestination = Home
-
     private val currentDestination: NavDestination?
         @Composable get() = navController
             .currentBackStackEntryAsState().value?.destination
 
+    var isLoggedIn by mutableStateOf(false)
+        private set
 
     val currentTab: MainTab?
         @Composable get() = MainTab.find { tabRoute ->
@@ -36,11 +37,8 @@ class MainNavigator(
 
     fun navigate(tabRoute: MainTab) {
         val navOptions = navOptions {
-            navController.currentDestination?.route?.let {
-                popUpTo(it) {
-                    inclusive = true
-                    saveState = true
-                }
+            popUpTo(navController.graph.startDestinationId) {
+                saveState = true
             }
             launchSingleTop = true
             restoreState = true
@@ -58,46 +56,39 @@ class MainNavigator(
         navController.navigateUp()
     }
 
-    fun navigateToHomeFromLogin() {
+    fun navigateToHome() {
+        isLoggedIn = true
         navController.navigateToHome(
             navOptions {
                 popUpTo<Signin> { inclusive = true }
                 launchSingleTop = true
-            }
+            },
         )
     }
 
-    fun navigateToSigninWithData(id: String, pw: String) {
+    fun navigateToSigninFromSignup() {
+        isLoggedIn = false
         navController.navigateToSignin(
-            id = id,
-            pw = pw,
-            navOptions {
-                popUpTo(navController.graph.startDestinationId) {
-                    saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
-            }
+            navOptions = navOptions {
+                popUpTo<Signup> { inclusive = true }
+            },
         )
-    }
-
-    fun navigateToCommunity(navOptions: NavOptions? = null) {
-        navController.navigateToCommunity(navOptions)
     }
 
     fun navigateToSigninFromLogout() {
+        isLoggedIn = false
         navController.navigateToSignin(
-            id = null,
-            pw = null,
-            navOptions {
-                popUpTo(0) { inclusive = true }
+            navOptions = navOptions {
+                popUpTo(navController.graph.id) {
+                    inclusive = true
+                }
                 launchSingleTop = true
-            }
+            },
         )
     }
 
-    fun navigateToSignup(navOptions: NavOptions? = null) {
-        navController.navigateToSignup(navOptions)
+    fun navigateToSignup() {
+        navController.navigateToSignup()
     }
 
     @Composable

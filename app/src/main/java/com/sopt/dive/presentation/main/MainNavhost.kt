@@ -8,6 +8,7 @@ import com.sopt.dive.presentation.community.navigation.communityNavGraph
 import com.sopt.dive.presentation.home.navigation.homeNavGraph
 import com.sopt.dive.presentation.mypage.navigation.mypageNavGraph
 import com.sopt.dive.presentation.search.navigation.searchNavGraph
+import com.sopt.dive.presentation.signin.navigation.Signin
 import com.sopt.dive.presentation.signin.navigation.signinNavGraph
 import com.sopt.dive.presentation.signup.navigation.signupNavGraph
 
@@ -15,13 +16,13 @@ import com.sopt.dive.presentation.signup.navigation.signupNavGraph
 fun MainNavHost(
     navigator: MainNavigator,
     padding: PaddingValues,
+    isLoggedIn: Boolean,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navigator.navController,
-        startDestination = navigator.startDestination,
-        modifier = modifier
-
+        startDestination = Signin,
+        modifier = modifier,
     ) {
         homeNavGraph(padding)
         searchNavGraph(padding)
@@ -31,18 +32,16 @@ fun MainNavHost(
         )
         mypageNavGraph(
             padding = padding,
-            navigateToSignin = navigator::navigateToSigninFromLogout
+            navigateToSignin = navigator::navigateToSigninFromLogout,
         )
         signinNavGraph(
             padding = padding,
-            navigateToHome = navigator::navigateToHomeFromLogin,
-            navigateToSignUp = { navigator.navigateToSignup() }
+            navigateToHome = navigator::navigateToHome,
+            navigateToSignUp = navigator::navigateToSignup,
         )
         signupNavGraph(
             padding = padding,
-            navigateToSignIn = { id, pw ->
-                navigator.navigateToSigninWithData(id, pw)
-            }
+            navigateToSignIn = navigator::navigateToSigninFromSignup,
         )
     }
 }
