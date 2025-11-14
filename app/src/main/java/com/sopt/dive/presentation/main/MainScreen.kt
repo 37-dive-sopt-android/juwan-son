@@ -8,27 +8,26 @@ import com.sopt.dive.presentation.main.component.MainBottomBar
 import kotlinx.collections.immutable.toPersistentList
 
 @Composable
-fun MainScreen(
-    navigator: MainNavigator = rememberMainNavigator(),
-) {
+fun MainScreen() {
+    val navigator = rememberMainNavigator()
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-
         bottomBar = {
-            if (navigator.showBottomNavigator()) {
+            if (navigator.isLoggedIn && navigator.showBottomNavigator()) {
                 MainBottomBar(
                     modifier = Modifier,
                     tabs = MainTab.entries.toPersistentList(),
                     currentTab = navigator.currentTab,
-                    onTabSelected = navigator::navigate
+                    onTabSelected = navigator::navigate,
                 )
             }
-        }
+        },
     ) { padding ->
         MainNavHost(
             navigator = navigator,
             padding = padding,
-            modifier = Modifier
+            isLoggedIn = navigator.isLoggedIn,
         )
     }
 }
