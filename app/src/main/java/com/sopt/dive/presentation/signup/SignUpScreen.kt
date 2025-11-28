@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,11 +30,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.sopt.dive.R
 import com.sopt.dive.core.component.button.SoptButton
 import com.sopt.dive.core.component.textField.TextFieldForm
 import com.sopt.dive.data.local.UserData
 import com.sopt.dive.data.local.UserPreferences
+import com.sopt.dive.presentation.signup.viewmodel.SignUpSideEffect
+import com.sopt.dive.presentation.signup.viewmodel.SignUpViewModel
 
 @Preview(showBackground = true)
 @Composable
@@ -48,16 +52,36 @@ private fun PreviewSignUpScreen() {
 @Composable
 fun SignUpRoute(
     paddingValues: PaddingValues,
-    navigateToSignIn: (String, String) -> Unit,
+    navigateToSignIn: () -> Unit,
+    viewModel: SignUpViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val userPreferences = remember { UserPreferences(context) }
+
+    LaunchedEffect(Unit) {
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                is SignUpSideEffect.NavigateToSignIn -> {
+                    Toast.makeText(context, "회원가입 성공!", Toast.LENGTH_SHORT).show()
+                    navigateToSignIn()
+                }
+                is SignUpSideEffect.ShowError -> {
+                    Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
     SignUpScreen(
         paddingValues = paddingValues,
         onSignUpSuccess = { userData ->
             userPreferences.saveLoginInfo(userData)
-            navigateToSignIn(userData.id, userData.password)
+            viewModel.signUp(
+                username = userData.id,
+                password = userData.password,
+                nickname = userData.nickname,
+                mbti = ""
+            )
         },
         onSignUpFail = {
             Toast.makeText(context, "회원가입에 실패했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()

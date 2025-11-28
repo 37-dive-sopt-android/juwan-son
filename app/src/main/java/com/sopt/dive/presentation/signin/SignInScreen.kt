@@ -30,10 +30,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.sopt.dive.R
 import com.sopt.dive.core.component.button.SoptButton
 import com.sopt.dive.core.component.textField.TextFieldForm
 import com.sopt.dive.data.local.UserPreferences
+import com.sopt.dive.presentation.signin.viewmodel.SignInSideEffect
+import com.sopt.dive.presentation.signin.viewmodel.SignInViewModel
 
 @Preview(showBackground = true)
 @Composable
@@ -43,8 +46,7 @@ private fun ReviewSignInScreen() {
         navigateToHome = {},
         navigateToSignUp = {},
         userPreferences = UserPreferences(LocalContext.current),
-        initialId = "",
-        initialPw = "",
+        onApiSignIn = { _, _ -> },
         modifier = Modifier
     )
 }
@@ -54,26 +56,32 @@ fun SignInRoute(
     paddingValues: PaddingValues,
     navigateToHome: () -> Unit,
     navigateToSignUp: () -> Unit,
-    savedId: String?,
-    savedPw: String?,
+    viewModel: SignInViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val userPreferences = remember { UserPreferences(context) }
 
     LaunchedEffect(Unit) {
-        userPreferences.getLoginInfo()?.let { userData ->
-            Toast.makeText(context, "${userData.nickname}님 환영합니다!", Toast.LENGTH_SHORT).show()
-            navigateToHome()
+        viewModel.sideEffect.collect { sideEffect ->
+            when (sideEffect) {
+                is SignInSideEffect.NavigateToHome -> {
+                    Toast.makeText(context, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                    navigateToHome()
+                }
+                is SignInSideEffect.ShowError -> {
+                    Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
+
 
     SignInScreen(
         paddingValues = paddingValues,
         navigateToHome = navigateToHome,
         navigateToSignUp = navigateToSignUp,
         userPreferences = userPreferences,
-        initialId = savedId ?: "",
-        initialPw = savedPw ?: ""
+        onApiSignIn = { id, pw -> viewModel.signIn(id, pw) }
     )
 }
 
@@ -83,13 +91,12 @@ fun SignInScreen(
     navigateToHome: () -> Unit,
     navigateToSignUp: () -> Unit,
     userPreferences: UserPreferences,
-    initialId: String,
-    initialPw: String,
+    onApiSignIn: (String, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
-    var id by remember { mutableStateOf(initialId) }
-    var pw by remember { mutableStateOf(initialPw) }
+    var id by remember { mutableStateOf("") }
+    var pw by remember { mutableStateOf("") }
 
     val context = LocalContext.current
     val passwordFocusRequester = remember { FocusRequester() }
@@ -99,7 +106,7 @@ fun SignInScreen(
         val savedInfo = userPreferences.getLoginInfo()
 
         if (savedInfo == null) {
-            Toast.makeText(context, "회원가입이 필요합니다", Toast.LENGTH_SHORT).show()
+            onApiSignIn(id, pw)
             return
         }
 
