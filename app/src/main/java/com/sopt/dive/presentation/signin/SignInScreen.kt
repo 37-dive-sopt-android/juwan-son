@@ -31,11 +31,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sopt.dive.R
 import com.sopt.dive.core.component.button.SoptButton
 import com.sopt.dive.core.component.textField.TextFieldForm
 import com.sopt.dive.data.local.UserPreferences
-import com.sopt.dive.presentation.signin.viewmodel.SignInSideEffect
+import com.sopt.dive.presentation.signin.viewmodel.SignInState
 import com.sopt.dive.presentation.signin.viewmodel.SignInViewModel
 
 @Preview(showBackground = true)
@@ -60,18 +61,22 @@ fun SignInRoute(
 ) {
     val context = LocalContext.current
     val userPreferences = remember { UserPreferences(context) }
+    val signInState by viewModel.signInState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        viewModel.sideEffect.collect { sideEffect ->
-            when (sideEffect) {
-                is SignInSideEffect.NavigateToHome -> {
-                    Toast.makeText(context, "로그인 성공!", Toast.LENGTH_SHORT).show()
-                    navigateToHome()
-                }
-                is SignInSideEffect.ShowError -> {
-                    Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-                }
+    LaunchedEffect(signInState) {
+        when (val state = signInState) {
+            is SignInState.NavigateToHome -> {
+                Toast.makeText(context, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                navigateToHome()
+                viewModel.resetSignInState()
             }
+
+            is SignInState.ShowError -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                viewModel.resetSignInState()
+            }
+
+            SignInState.Idle -> Unit
         }
     }
 

@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sopt.dive.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,14 +14,14 @@ class SignUpViewModel @Inject constructor(
     private val authRepository: AuthRepository,
 ) : ViewModel() {
 
-    private val _sideEffect = MutableSharedFlow<SignUpSideEffect>()
-    val sideEffect = _sideEffect.asSharedFlow()
+    private val _signUpState = MutableStateFlow<SignUpState>(SignUpState.Idle)
+    val signUpState = _signUpState.asStateFlow()
 
     fun signUp(
         username: String,
         password: String,
         nickname: String,
-        mbti: String
+        mbti: String,
     ) {
         viewModelScope.launch {
             authRepository.postSignUp(
@@ -30,16 +30,21 @@ class SignUpViewModel @Inject constructor(
                 name = nickname,
                 email = "$username@example.com",
                 age = 20
-            ).onSuccess { member ->
-                _sideEffect.emit(SignUpSideEffect.NavigateToSignIn)
+            ).onSuccess {
+                _signUpState.value = SignUpState.NavigateToSignIn
             }.onFailure { error ->
-                _sideEffect.emit(SignUpSideEffect.ShowError(error.message ?: "회원가입 실패"))
+                _signUpState.value = SignUpState.ShowError(error.message ?: "회원가입 실패")
             }
         }
     }
+
+    fun resetSignUpState() {
+        _signUpState.value = SignUpState.Idle
+    }
 }
 
-sealed interface SignUpSideEffect {
-    data object NavigateToSignIn : SignUpSideEffect
-    data class ShowError(val message: String) : SignUpSideEffect
+sealed interface SignUpState {
+    data object Idle : SignUpState
+    data object NavigateToSignIn : SignUpState
+    data class ShowError(val message: String) : SignUpState
 }

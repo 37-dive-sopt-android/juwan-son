@@ -31,12 +31,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sopt.dive.R
 import com.sopt.dive.core.component.button.SoptButton
 import com.sopt.dive.core.component.textField.TextFieldForm
 import com.sopt.dive.data.local.UserData
 import com.sopt.dive.data.local.UserPreferences
-import com.sopt.dive.presentation.signup.viewmodel.SignUpSideEffect
+import com.sopt.dive.presentation.signup.viewmodel.SignUpState
 import com.sopt.dive.presentation.signup.viewmodel.SignUpViewModel
 
 @Preview(showBackground = true)
@@ -53,22 +54,26 @@ private fun PreviewSignUpScreen() {
 fun SignUpRoute(
     paddingValues: PaddingValues,
     navigateToSignIn: () -> Unit,
-    viewModel: SignUpViewModel = hiltViewModel()
+    viewModel: SignUpViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
     val userPreferences = remember { UserPreferences(context) }
+    val signUpState by viewModel.signUpState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        viewModel.sideEffect.collect { sideEffect ->
-            when (sideEffect) {
-                is SignUpSideEffect.NavigateToSignIn -> {
-                    Toast.makeText(context, "회원가입 성공!", Toast.LENGTH_SHORT).show()
-                    navigateToSignIn()
-                }
-                is SignUpSideEffect.ShowError -> {
-                    Toast.makeText(context, sideEffect.message, Toast.LENGTH_SHORT).show()
-                }
+    LaunchedEffect(signUpState) {
+        when (val state = signUpState) {
+            is SignUpState.NavigateToSignIn -> {
+                Toast.makeText(context, "회원가입 성공!", Toast.LENGTH_SHORT).show()
+                navigateToSignIn()
+                viewModel.resetSignUpState()
             }
+
+            is SignUpState.ShowError -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                viewModel.resetSignUpState()
+            }
+
+            SignUpState.Idle -> Unit
         }
     }
 
